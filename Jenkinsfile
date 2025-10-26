@@ -26,5 +26,27 @@ pipeline {
                 }
             }
         }
+        stage('Compose stop') {
+            when {
+                expression {params.Action == 'Compose stop'}
+            }
+            steps {
+                withCredentials([
+                    string(credentialsId: 'tg_chat_id', variable: 'TG_CHAT_ID'),
+                    string(credentialsId: 'tg_token', variable: 'TG_TOKEN')
+                ]) {
+                    sh '''
+                       #!/bin/bash
+
+                       docker-compose -p tms-lesson-24 stop
+                   
+                       CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
+                       CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
+
+                       curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
+                       '''
+                }
+            }
+        }
     }
 }
