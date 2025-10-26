@@ -1,2 +1,13 @@
-#/bin/bash
-echo "Test GitHub integration."
+pipeline {
+    agent {
+        label 'master' 
+    }
+    stages {
+        stage('Выполнение на мастере') {
+            steps {
+                sh 'echo "Я выполняюсь на мастере!"'
+                sh 'pwd'
+            }
+        }
+    }
+}
