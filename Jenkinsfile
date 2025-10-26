@@ -5,8 +5,7 @@ pipeline {
     stages {
         stage('Выполнение на мастере') {
             steps {
-                sh 'echo "Я выполняюсь на мастере!"'
-                sh 'pwd'
+                sh 'docker ps -a'
             }
         }
     }
