@@ -15,7 +15,7 @@ pipeline {
                        CONTAINERS_STATS=$(docker-compose -p task_02 ps -a --format "table {{.Name}}\t\t{{.Status}}")
                        CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
 
-                       curl -Xs POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
+                       curl -X -s POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
                        '''
                 }
             }
