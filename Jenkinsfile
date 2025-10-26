@@ -5,16 +5,16 @@ pipeline {
     parameters {
         choice(name: 'Action', choices: ['Compose ps', 'Compose start', 'Compose stop'])
     }
+    environment {
+        TG_CHAT_ID = credentials('tg_chat_id')
+        TG_TOKEN = credentials('tg_token')
+    }
     stages {
         stage('Compose ps') {
             when {
                 expression {params.Action == 'Compose ps'}
             }
             steps {
-                withCredentials([
-                    string(credentialsId: 'tg_chat_id', variable: 'TG_CHAT_ID'),
-                    string(credentialsId: 'tg_token', variable: 'TG_TOKEN')
-                ]) {
                     sh '''
                        #!/bin/bash
                    
@@ -23,7 +23,6 @@ pipeline {
 
                        curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
                        '''
-                }
             }
         }
         stage('Compose stop') {
@@ -31,10 +30,6 @@ pipeline {
                 expression {params.Action == 'Compose stop'}
             }
             steps {
-                withCredentials([
-                    string(credentialsId: 'tg_chat_id', variable: 'TG_CHAT_ID'),
-                    string(credentialsId: 'tg_token', variable: 'TG_TOKEN')
-                ]) {
                     sh '''
                        #!/bin/bash
 
@@ -45,7 +40,6 @@ pipeline {
 
                        curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
                        '''
-                }
             }
         }
     }
