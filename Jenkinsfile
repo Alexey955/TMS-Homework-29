@@ -2,6 +2,9 @@ pipeline {
     agent {
         label 'built-in' 
     }
+    parameters {
+        choice(name: 'Action', choices: ['Compose ps', 'Compose start', 'Compose stop'])
+    }
     stages {
         stage('Выполнение на мастере') {
             steps {
