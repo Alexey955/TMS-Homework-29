@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'master' 
+        label 'built-in' 
     }
     stages {
         stage('Выполнение на мастере') {
