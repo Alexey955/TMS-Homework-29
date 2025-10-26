@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Выполнение на мастере') {
             steps {
-                sh 'docker ps -a'
+                sh 'docker-compose -p task_02 ps'
             }
         }
     }
