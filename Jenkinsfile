@@ -15,13 +15,30 @@ pipeline {
                 expression {params.Action == 'Compose ps'}
             }
             steps {
-                    sh '''
-                       #!/bin/bash
+                sh '''
+                   #!/bin/bash
                    
-                       CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
-                       CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
-
-                       curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
+                   CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
+                   CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
+                   
+                   curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
+                   '''
+            }
+        }
+        stage('Compose start') {
+            when {
+                expression {params.Action == 'Compose start'}
+            }
+            steps {
+                sh '''
+                   #!/bin/bash
+                   
+                   docker-compose -p tms-lesson-24 start
+                   
+                   CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
+                   CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
+                   
+                   curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
                        '''
             }
         }
@@ -30,15 +47,15 @@ pipeline {
                 expression {params.Action == 'Compose stop'}
             }
             steps {
-                    sh '''
-                       #!/bin/bash
-
-                       docker-compose -p tms-lesson-24 stop
+                sh '''
+                   #!/bin/bash
                    
-                       CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
-                       CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
-
-                       curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
+                   docker-compose -p tms-lesson-24 stop
+                   
+                   CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
+                   CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
+                   
+                   curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
                        '''
             }
         }
