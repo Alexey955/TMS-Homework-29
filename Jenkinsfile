@@ -6,7 +6,10 @@ pipeline {
         choice(name: 'Action', choices: ['Compose ps', 'Compose start', 'Compose stop'])
     }
     stages {
-        stage('Выполнение на мастере') {
+        stage('Compose ps') {
+            when {
+                expression {params.Action == 'Compose ps'}
+            }
             steps {
                 withCredentials([
                     string(credentialsId: 'tg_chat_id', variable: 'TG_CHAT_ID'),
