@@ -10,21 +10,6 @@ pipeline {
         TG_TOKEN = credentials('tg_token')
     }
     stages {
-        stage('Compose ps') {
-            when {
-                expression {params.Action == 'Compose ps'}
-            }
-            steps {
-                sh '''
-                   #!/bin/bash
-                   
-                   CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
-                   CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
-                   
-                   curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
-                   '''
-            }
-        }
         stage('Compose start') {
             when {
                 expression {params.Action == 'Compose start'}
@@ -34,12 +19,7 @@ pipeline {
                    #!/bin/bash
                    
                    docker-compose -p tms-lesson-24 start
-                   
-                   CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
-                   CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
-                   
-                   curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
-                       '''
+                   '''
             }
         }
         stage('Compose stop') {
@@ -51,12 +31,19 @@ pipeline {
                    #!/bin/bash
                    
                    docker-compose -p tms-lesson-24 stop
+                   '''
+            }
+        }
+        stage('Compose ps') {
+            steps {
+                sh '''
+                   #!/bin/bash
                    
                    CONTAINERS_STATS=$(docker-compose -p tms-lesson-24 ps -a --format "table {{.Name}}\t\t{{.Status}}")
                    CONTAINERS_STATS=$(echo "$CONTAINERS_STATS" | sed 's/+0000 UTC//g')
                    
                    curl -X POST -H "Content-Type:multipart/form-data" -F "chat_id=$TG_CHAT_ID" -F "text=$CONTAINERS_STATS" "https://api.telegram.org/bot$TG_TOKEN/sendMessage"
-                       '''
+                   '''
             }
         }
     }
